@@ -1,0 +1,6 @@
+streamlit
+groq
+gTTS
+deep-translator
+streamlit-mic-recorder
+python-dotenv
