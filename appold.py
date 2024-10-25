@@ -1,19 +1,6 @@
-LANGUAGE_CODES = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "Marathi": "mr",
-    "Telugu": "te",
-    "Tamil": "ta",
-    "Gujarati": "gu",
-    "Urdu": "ur",
-    "Kannada": "kn",
-    "Odia": "or",
-    "Malayalam": "ml"
-}
-
 import streamlit as st
 from streamlit_mic_recorder import speech_to_text
+from deep_translator import GoogleTranslator
 from gtts import gTTS
 import io
 import groq
@@ -58,48 +45,38 @@ def translate_text(text, source_lang, target_lang):
 
 # Function to convert text to speech
 def text_to_speech(text, lang):
-    tts = gTTS(text=text, lang=LANGUAGE_CODES[lang])
+    tts = gTTS(text=text, lang=lang)
     fp = io.BytesIO()
     tts.write_to_fp(fp)
     fp.seek(0)
     return fp.getvalue()
 
 # Streamlit app
-st.title("Multi-Language Voice Translator using LLAMA3.2")
-
-# Language selection
-languages = list(LANGUAGE_CODES.keys())
-col1, col2 = st.columns(2)
-
-with col1:
-    source_lang = st.selectbox("Select source language", languages, index=languages.index("English"))
-    
-with col2:
-    target_lang = st.selectbox("Select target language", languages, index=languages.index("Hindi"))
+st.title("Marathi-English Voice Translator using LLAMA3.2")
 
 # Create two columns for input
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader(f"{source_lang} to {target_lang}")
-    source_speech = speech_to_text(language=LANGUAGE_CODES[source_lang], key='source_speech')
-    if source_speech:
-        st.write(f"{source_lang}: {source_speech}")
-        translation = translate_text(source_speech, source_lang, target_lang)
-        st.write(f"{target_lang}: {translation}")
+    st.subheader("Marathi to English")
+    marathi_speech = speech_to_text(language='mr', key='marathi_speech')
+    if marathi_speech:
+        st.write(f"Marathi: {marathi_speech}")
+        english_translation = translate_text(marathi_speech, 'Marathi', 'English')
+        st.write(f"English: {english_translation}")
         
         # Convert translation to speech
-        audio = text_to_speech(translation, target_lang)
-        st.audio(audio, format="audio/mp3")
+        english_audio = text_to_speech(english_translation, 'en')
+        st.audio(english_audio, format="audio/mp3")
 
 with col2:
-    st.subheader(f"{target_lang} to {source_lang}")
-    target_speech = speech_to_text(language=LANGUAGE_CODES[target_lang], key='target_speech')
-    if target_speech:
-        st.write(f"{target_lang}: {target_speech}")
-        translation = translate_text(target_speech, target_lang, source_lang)
-        st.write(f"{source_lang}: {translation}")
+    st.subheader("English to Marathi")
+    english_speech = speech_to_text(language='en', key='english_speech')
+    if english_speech:
+        st.write(f"English: {english_speech}")
+        marathi_translation = translate_text(english_speech, 'English', 'Marathi')
+        st.write(f"Marathi: {marathi_translation}")
         
         # Convert translation to speech
-        audio = text_to_speech(translation, source_lang)
-        st.audio(audio, format="audio/mp3")
+        marathi_audio = text_to_speech(marathi_translation, 'mr')
+        st.audio(marathi_audio, format="audio/mp3")
